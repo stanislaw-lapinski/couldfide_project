@@ -128,7 +128,7 @@ def test_edge_case_keyword_null_column():
     print("\n13) Test 'test_edge_case_keyword_null_column' ✅")
 
 
-def test_case_performance():
+def test_performance():
     rows = 100_000_000
     df_large = pd.DataFrame({
         'quantity':np.random.randint(1, 100, size=rows),
@@ -171,4 +171,4 @@ test_edge_case_forbidden_operator()
 test_edge_case_missing_column_in_df()
 test_edge_case_keyword_inf()
 test_edge_case_keyword_null_column()
-test_case_performance()
+test_performance()
