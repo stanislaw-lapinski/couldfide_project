@@ -1,3 +1,6 @@
+import time
+
+import numpy as np
 import pandas as pd
 from solution import add_virtual_column
 
@@ -114,7 +117,37 @@ def test_edge_case_keyword_null_column():
     result = add_virtual_column(df, "null * price", "total")
     actual_val = result["total"].iloc[0] if not result.empty else None
     assert result.empty, "13) Should return empty df, because 'null' cannot be the name of the column."
-    print("\n13) Test '13) test_edge_case_keyword_null_column' ✅")
+    print("\n13) Test 'test_edge_case_keyword_null_column' ✅")
+
+def test_case_performance():
+    rows = 100_000_000
+    df_large = pd.DataFrame({
+        'quantity':np.random.randint(1, 100, size=rows),
+        'price':np.random.uniform(10.0, 500.0, size=rows)
+    })
+
+    # --- 1. BASELINE ---
+    start_base = time.time()
+    _ = df_large['quantity'] * df_large['price']
+    end_base = time.time()
+    base_duration = end_base - start_base
+
+    # --- 2. MY FUNCTION ---
+    start_time = time.time()
+    result = add_virtual_column(df_large, "quantity * price", "total")
+    end_time = time.time()
+    function_duration = end_time - start_time
+
+    # --- 3. ANALYSIS ---
+    overhead = (function_duration / base_duration)
+
+    assert not result.empty, "14) Should not return empty df."
+    assert 'total' in result.columns, "14) Should have added new column to the dataframe."
+    print(f"⏱️ Baseline (Native): {base_duration:.6f}s")
+    print(f"⏱️ My function:      {function_duration:.6f}s")
+    print(f"🚀 My function is {overhead:.2f}x slower than native operation.")
+
+
 
 test_sum_of_two_columns()
 test_multiplication_of_two_columns()
@@ -129,3 +162,4 @@ test_edge_case_forbidden_operator()
 test_edge_case_missing_column_in_df()
 test_edge_case_keyword_inf()
 test_edge_case_keyword_null_column()
+test_case_performance()
